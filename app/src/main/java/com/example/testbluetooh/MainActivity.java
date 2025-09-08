@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -16,6 +17,17 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.mazenrashed.printooth.Printooth;
+import com.mazenrashed.printooth.data.converter.ArabicConverter;
+import com.mazenrashed.printooth.data.printable.Printable;
+import com.mazenrashed.printooth.data.printable.TextPrintable;
+import com.mazenrashed.printooth.data.printer.DefaultPrinter;
+import com.mazenrashed.printooth.data.printer.Printer;
+import com.mazenrashed.printooth.ui.ScanningActivity;
+import com.mazenrashed.printooth.utilities.Printing;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,8 +37,33 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityResultLauncher<Intent> enableBluetoothLauncher;
     private ActivityResultLauncher<String[]> permissionLauncher;
-    BluetoothDeviceAdapter scannedAdapter = new BluetoothDeviceAdapter();
-    BluetoothDeviceAdapter pairedAdapter = new BluetoothDeviceAdapter();
+
+    private Printing printing = null;
+    private Printer customPrinter = null;
+
+    BluetoothDeviceAdapter scannedAdapter = new BluetoothDeviceAdapter(device -> {
+        Printooth.INSTANCE.setPrinter(device.getName(), device.getAddress());
+        Toast.makeText(this, "Click en escaneado: " + device.getName(), Toast.LENGTH_SHORT).show();
+    });
+    BluetoothDeviceAdapter pairedAdapter = new BluetoothDeviceAdapter(device -> {
+        Boolean isPaired = Printooth.INSTANCE.hasPairedPrinter();
+        if (Printooth.INSTANCE.hasPairedPrinter()){
+            ArrayList<Printable> printables = new ArrayList<>();
+            Printable printable = new TextPrintable.Builder()
+                    .setText("Hello World")
+                    .setNewLinesAfter(5)
+                    .setCharacterCode(DefaultPrinter.Companion.getCHARCODE_PC852())
+                    .setNewLinesAfter(5)
+                    .build();
+            printables.add(printable);
+
+            Printooth.INSTANCE.printer().print(printables);
+            Toast.makeText(this, "Click en escaneado: " + device.getName(), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "NO - ELSE PRINT" + device.getName(), Toast.LENGTH_SHORT).show();
+        }
+        Toast.makeText(this, "Click en paired: " + isPaired, Toast.LENGTH_SHORT).show();
+    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +73,25 @@ public class MainActivity extends AppCompatActivity {
         BluetoothManager bluetoothManager = (BluetoothManager) getApplicationContext()
                 .getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothAdapter != null ? bluetoothManager.getAdapter() : null;
+        printing = getPrinting();
         setupPermissions();
         setupViewModel();
         buildView();
         observeBluetoothState();
     }
+
+    private Printing getPrinting() {
+        if (Printooth.INSTANCE.hasPairedPrinter()) {
+            if (customPrinter != null) {
+                return Printooth.INSTANCE.printer(customPrinter);
+            } else {
+                return Printooth.INSTANCE.printer();
+            }
+        } else {
+            return null;
+        }
+    }
+
 
     private boolean isBluetoothEnabled() {
         return bluetoothAdapter != null && bluetoothAdapter.isEnabled();

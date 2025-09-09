@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<Printable> printables = new ArrayList<>();
             Printable printable = new TextPrintable.Builder()
                     .setText("Hello World")
-                    .setNewLinesAfter(5)
+                    .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
                     .setCharacterCode(DefaultPrinter.Companion.getCHARCODE_PC852())
                     .setNewLinesAfter(5)
                     .build();

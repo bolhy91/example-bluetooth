@@ -90,31 +90,6 @@ public class BluetoothController implements IBluetooth {
         }
     }
 
-    @Override
-    public LiveData<Boolean> isConnected() {
-        return null;
-    }
-
-    @Override
-    public LiveData<String> getErrors() {
-        return null;
-    }
-
-    @Override
-    public LiveData<ConnectResult> startServer() {
-        return null;
-    }
-
-    @Override
-    public LiveData<ConnectResult> connectDevice(BluetoothDevice device) {
-        return null;
-    }
-
-    @Override
-    public void closeConnection() {
-
-    }
-
     @SuppressLint("MissingPermission")
     private void updatePairedDevices() {
         if (!hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) {

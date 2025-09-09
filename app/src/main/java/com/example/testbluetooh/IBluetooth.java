@@ -14,13 +14,4 @@ public interface IBluetooth {
     void stopDiscovery();
 
     void release();
-
-    LiveData<Boolean> isConnected();
-
-    LiveData<String> getErrors();
-
-    LiveData<ConnectResult> startServer();
-    LiveData<ConnectResult> connectDevice(BluetoothDevice device);
-
-    void closeConnection();
 }

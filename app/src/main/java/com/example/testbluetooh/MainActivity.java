@@ -38,9 +38,6 @@ public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> enableBluetoothLauncher;
     private ActivityResultLauncher<String[]> permissionLauncher;
 
-    private Printing printing = null;
-    private Printer customPrinter = null;
-
     BluetoothDeviceAdapter scannedAdapter = new BluetoothDeviceAdapter(device -> {
         Printooth.INSTANCE.setPrinter(device.getName(), device.getAddress());
         Toast.makeText(this, "Click en escaneado: " + device.getName(), Toast.LENGTH_SHORT).show();
@@ -73,25 +70,11 @@ public class MainActivity extends AppCompatActivity {
         BluetoothManager bluetoothManager = (BluetoothManager) getApplicationContext()
                 .getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothAdapter != null ? bluetoothManager.getAdapter() : null;
-        printing = getPrinting();
         setupPermissions();
         setupViewModel();
         buildView();
         observeBluetoothState();
     }
-
-    private Printing getPrinting() {
-        if (Printooth.INSTANCE.hasPairedPrinter()) {
-            if (customPrinter != null) {
-                return Printooth.INSTANCE.printer(customPrinter);
-            } else {
-                return Printooth.INSTANCE.printer();
-            }
-        } else {
-            return null;
-        }
-    }
-
 
     private boolean isBluetoothEnabled() {
         return bluetoothAdapter != null && bluetoothAdapter.isEnabled();

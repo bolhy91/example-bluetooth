@@ -1,9 +1,33 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.TestBluetooh" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.TestBluetooh" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Colores primarios -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        
+        <!-- Colores secundarios -->
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorSecondaryVariant">@color/accent</item>
+        <item name="colorOnSecondary">@color/white</item>
+        
+        <!-- Estado de la barra de estado -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        
+        <!-- Estilo de los botones -->
+        <item name="materialButtonStyle">@style/Widget.App.Button</item>
     </style>
 
-    <style name="Theme.TestBluetooh" parent="Base.Theme.TestBluetooh" />
+    <!-- Estilo personalizado para botones -->
+    <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">@color/white</item>
+        <item name="backgroundTint">?attr/colorPrimary</item>
+        <item name="rippleColor">@color/primary_light</item>
+    </style>
+
+    <!-- Estilo para botones de texto -->
+    <style name="Widget.App.Button.TextButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="rippleColor">@color/primary_light</item>
+    </style>
 </resources>

@@ -1,7 +1,33 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.TestBluetooh" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.TestBluetooh" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Colores primarios -->
+        <item name="colorPrimary">@color/primary_light</item>
+        <item name="colorPrimaryVariant">@color/primary</item>
+        <item name="colorOnPrimary">@color/black</item>
+        
+        <!-- Colores secundarios -->
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorSecondaryVariant">@color/accent</item>
+        <item name="colorOnSecondary">@color/black</item>
+        
+        <!-- Estado de la barra de estado -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        
+        <!-- Estilo de los botones -->
+        <item name="materialButtonStyle">@style/Widget.App.Button</item>
+    </style>
+
+    <!-- Estilo personalizado para botones en modo oscuro -->
+    <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">@color/black</item>
+        <item name="backgroundTint">?attr/colorPrimary</item>
+        <item name="rippleColor">@color/primary_dark</item>
+    </style>
+
+    <!-- Estilo para botones de texto en modo oscuro -->
+    <style name="Widget.App.Button.TextButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="rippleColor">@color/primary_dark</item>
     </style>
 </resources>

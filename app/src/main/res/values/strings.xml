@@ -1,4 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">TestBluetooh</string>
-    <string name="buscar_impresoras_bluetooth">Buscar impresoras Bluetooth</string>
+    <string name="app_name">Test Bluetooth</string>
+    
+    <!-- Títulos -->
+    <string name="title_select_printer">Seleccione la impresora</string>
+    
+    <!-- Botones -->
+    <string name="btn_search">Buscar</string>
+    <string name="btn_stop">Detener</string>
+    
+    <!-- Estados -->
+    <string name="no_hay_dispositivos_disponibles">No hay dispositivos disponibles</string>
+    <string name="searching_devices">Buscando dispositivos…</string>
+    
+    <!-- Mensajes -->
+    <string name="msg_printer_selected">Impresora seleccionada: %1$s</string>
+    <string name="msg_printer_not_configured">No hay impresora configurada</string>
+    <string name="msg_printing">Imprimiendo en: %1$s</string>
+    
+    <!-- Descripciones de contenido -->
+    <string name="desc_device_type">Tipo de dispositivo</string>
 </resources>

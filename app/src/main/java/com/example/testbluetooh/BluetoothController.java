@@ -32,17 +32,14 @@ public class BluetoothController implements IBluetooth {
         this.bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         this.bluetoothAdapter = bluetoothManager != null ? bluetoothManager.getAdapter() : null;
 
-        this.foundDeviceReceiver = new BluetoothDeviceReceiver(new BluetoothDeviceReceiver.OnDeviceFoundCallback() {
-            @Override
-            public void onDeviceFound(android.bluetooth.BluetoothDevice device) {
-                BluetoothDevice newDevice = BluetoothMapper.toBluetoothDevice(device);
-                List<BluetoothDevice> current = scannedDevices.getValue();
-                if (current == null) current = new ArrayList<>();
+        this.foundDeviceReceiver = new BluetoothDeviceReceiver(device -> {
+            BluetoothDevice newDevice = BluetoothMapper.toBluetoothDevice(device);
+            List<BluetoothDevice> current = scannedDevices.getValue();
+            if (current == null) current = new ArrayList<>();
 
-                Set<BluetoothDevice> set = new HashSet<>(current);
-                if (set.add(newDevice)) {
-                    scannedDevices.postValue(new ArrayList<>(set));
-                }
+            Set<BluetoothDevice> set = new HashSet<>(current);
+            if (set.add(newDevice)) {
+                scannedDevices.postValue(new ArrayList<>(set));
             }
         });
         updatePairedDevices();

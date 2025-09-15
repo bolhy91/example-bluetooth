@@ -1,25 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="12dp"
-    android:id="@+id/viPrinter">
+    android:background="?attr/selectableItemBackground"
+    android:padding="16dp">
 
-    <TextView
-        android:id="@+id/txtDeviceName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Device Name"
-        android:textStyle="bold"
-        android:textSize="16sp"/>
+    <ImageView
+        android:id="@+id/ivDeviceType"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:contentDescription="Tipo de dispositivo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_bluetooth_device" />
 
-    <TextView
-        android:id="@+id/txtDeviceAddress"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="00:11:22:33:AA:BB"
-        android:textSize="14sp"
-        android:textColor="#666666"/>
-</LinearLayout>
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ivDeviceType"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvDeviceName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="Impresora Térmica" />
+
+        <TextView
+            android:id="@+id/tvDeviceAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp"
+            tools:text="00:11:22:33:44:55" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

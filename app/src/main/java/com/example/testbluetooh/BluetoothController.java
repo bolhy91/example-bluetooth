@@ -7,10 +7,13 @@ import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
+import com.mazenrashed.printooth.ui.ScanningActivity;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,6 +37,7 @@ public class BluetoothController implements IBluetooth {
 
         this.foundDeviceReceiver = new BluetoothDeviceReceiver(device -> {
             BluetoothDevice newDevice = BluetoothMapper.toBluetoothDevice(device);
+
             List<BluetoothDevice> current = scannedDevices.getValue();
             if (current == null) current = new ArrayList<>();
 
@@ -58,7 +62,7 @@ public class BluetoothController implements IBluetooth {
     @SuppressLint("MissingPermission")
     @Override
     public void startDiscovery() {
-        if (!hasPermission(Manifest.permission.BLUETOOTH_SCAN)) return;
+        if (!hasRequiredPermissions()) return;
         context.registerReceiver(foundDeviceReceiver, new IntentFilter(android.bluetooth.BluetoothDevice.ACTION_FOUND));
         updatePairedDevices();
         if (bluetoothAdapter != null) {
@@ -69,7 +73,7 @@ public class BluetoothController implements IBluetooth {
     @SuppressLint("MissingPermission")
     @Override
     public void stopDiscovery() {
-        if (!hasPermission(Manifest.permission.BLUETOOTH_SCAN)) {
+        if (!hasRequiredPermissions()) {
             return;
         }
 
@@ -96,13 +100,32 @@ public class BluetoothController implements IBluetooth {
             Set<android.bluetooth.BluetoothDevice> bondedDevices = bluetoothAdapter.getBondedDevices();
             List<BluetoothDevice> deviceList = new ArrayList<>();
             for (android.bluetooth.BluetoothDevice device : bondedDevices) {
+                Log.i("DEEEEVICE 2", device.getBondState() + "");
+
                 deviceList.add(BluetoothMapper.toBluetoothDevice(device));
             }
+
             pairedDevices.postValue(deviceList);
         }
     }
 
     private boolean hasPermission(String permission) {
         return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private boolean hasRequiredPermissions() {
+        // Para Android 10, necesitamos permisos de ubicación
+        boolean hasLocationPermission = hasPermission(Manifest.permission.ACCESS_FINE_LOCATION) ||
+                                     hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
+
+        // Para Android 12 y superior, necesitamos permisos Bluetooth específicos
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            return hasLocationPermission &&
+                   hasPermission(Manifest.permission.BLUETOOTH_SCAN) &&
+                   hasPermission(Manifest.permission.BLUETOOTH_CONNECT);
+        }
+
+        // Para Android 10 y 11, solo necesitamos ubicación
+        return hasLocationPermission;
     }
 }

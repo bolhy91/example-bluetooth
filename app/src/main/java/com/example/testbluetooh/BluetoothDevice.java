@@ -5,10 +5,12 @@ import androidx.annotation.NonNull;
 public class BluetoothDevice {
     private final String name;
     private final String address;
+    private final int bondState;
 
-    public BluetoothDevice(String name, String address) {
+    public BluetoothDevice(String name, String address, int bondState) {
         this.name = name;
         this.address = address;
+        this.bondState = bondState;
     }
 
     public String getAddress() {
@@ -35,6 +37,6 @@ public class BluetoothDevice {
     @NonNull
     @Override
     public String toString() {
-        return "BluetoothDevice{name='" + name + "', address='" + address + "'}";
+        return "BluetoothDevice{name='" + name + "', address='" + address + "', bondState=" + bondState + "}";
     }
 }

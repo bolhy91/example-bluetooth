@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -61,21 +63,25 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerDevices;
 
     BluetoothDeviceAdapter scannedAdapter = new BluetoothDeviceAdapter(device -> {
-        Printooth.INSTANCE.setPrinter(device.getName(), device.getAddress());
-        Toast.makeText(this, "Click en escaneado: " + device.getName(), Toast.LENGTH_SHORT).show();
+        Printooth.INSTANCE.removeCurrentPrinter();
+        //Printooth.INSTANCE.setPrinter(device.getName(), device.getAddress());
         Boolean isPaired = Printooth.INSTANCE.hasPairedPrinter();
-        if (Printooth.INSTANCE.hasPairedPrinter()){
-            var printer = new PairedPrinter(device.getName(), device.getAddress());
-            ArrayList<Printable> printables = new ArrayList<>();
-            Printable printable = new TextPrintable.Builder()
-                    .setText("Hello World")
-                    .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
-                    .setCharacterCode(DefaultPrinter.Companion.getCHARCODE_PC852())
-                    .setNewLinesAfter(5)
-                    .build();
-            printables.add(printable);
+        PairedPrinter pairedPrinter = Printooth.INSTANCE.getPairedPrinter();
+        //Toast.makeText(this, "Click en escaneado: " + pairedPrinter.getName(), Toast.LENGTH_SHORT).show();
 
-            Printooth.INSTANCE.printer(printer).print(printables);
+        if (Printooth.INSTANCE.hasPairedPrinter()){
+            //Printooth.INSTANCE.removeCurrentPrinter();
+//            var printer = new PairedPrinter(device.getName(), device.getAddress());
+//            ArrayList<Printable> printables = new ArrayList<>();
+//            Printable printable = new TextPrintable.Builder()
+//                    .setText("Hello World")
+//                    .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
+//                    .setCharacterCode(DefaultPrinter.Companion.getCHARCODE_PC852())
+//                    .setNewLinesAfter(5)
+//                    .build();
+//            printables.add(printable);
+//
+//            Printooth.INSTANCE.printer(printer).print(printables);
             Toast.makeText(this, getString(R.string.msg_printer_selected, device.getName()), Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, R.string.msg_printer_not_configured, Toast.LENGTH_SHORT).show();
@@ -129,32 +135,72 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupPermissions() {
+        // Registrar callback para activación de Bluetooth
         enableBluetoothLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    // Bluetooth activado, verificar permisos
+                    checkAndRequestPermissions();
                 }
+            }
         );
 
+        // Registrar callback para permisos
         permissionLauncher = registerForActivityResult(
-                new ActivityResultContracts.RequestMultiplePermissions(),
-                (Map<String, Boolean> perms) -> {
-                    boolean canEnableBluetooth = true;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        Boolean connectGranted = perms.get(Manifest.permission.BLUETOOTH_CONNECT);
-                        canEnableBluetooth = connectGranted != null && connectGranted;
-                    }
+            new ActivityResultContracts.RequestMultiplePermissions(),
+            permissions -> {
+                boolean allGranted = true;
+                for (Boolean isGranted : permissions.values()) {
+                    allGranted &= isGranted;
+                }
 
-                    if (canEnableBluetooth && !isBluetoothEnabled()) {
+                if (allGranted) {
+                    // Todos los permisos concedidos, verificar Bluetooth
+                    if (!isBluetoothEnabled()) {
                         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                         enableBluetoothLauncher.launch(enableBtIntent);
                     }
+                } else {
+                    Toast.makeText(this, "Se requieren permisos para escanear dispositivos", Toast.LENGTH_LONG).show();
                 }
+            }
         );
+
+        // Iniciar verificación de permisos
+        checkAndRequestPermissions();
+    }
+
+    private void checkAndRequestPermissions() {
+        ArrayList<String> permissionsToRequest = new ArrayList<>();
+
+        // Permisos necesarios para Android 10 (API 29)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) 
+                != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        }
+
+        // Permisos adicionales para Android 12 (API 31) y superior
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            permissionLauncher.launch(new String[]{
-                    Manifest.permission.BLUETOOTH_SCAN,
-                    Manifest.permission.BLUETOOTH_CONNECT
-            });
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) 
+                    != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.BLUETOOTH_SCAN);
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) 
+                    != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.BLUETOOTH_CONNECT);
+            }
+        }
+
+        if (!permissionsToRequest.isEmpty()) {
+            permissionLauncher.launch(permissionsToRequest.toArray(new String[0]));
+        } else if (!isBluetoothEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            enableBluetoothLauncher.launch(enableBtIntent);
         }
     }
 

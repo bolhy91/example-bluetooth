@@ -3,12 +3,22 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Permisos de Bluetooth -->
+    <!-- Permisos Bluetooth para todas las versiones -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    
+    <!-- Permisos de ubicación requeridos para escaneo Bluetooth en Android 10 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    
+    <!-- Permisos Bluetooth para Android 12 y superior -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" 
+        android:usesPermissionFlags="neverForLocation" 
+        tools:targetApi="s" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" 
+        tools:targetApi="s" />
 
-    <uses-feature android:name="android.hardware.bluetooth" />
+<!--    <uses-feature android:name="android.hardware.bluetooth" />-->
 
     <application
         android:name=".Application"
